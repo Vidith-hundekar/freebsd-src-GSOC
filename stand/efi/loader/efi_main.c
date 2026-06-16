@@ -33,15 +33,12 @@
 static EFI_PHYSICAL_ADDRESS heap;
 static UINTN heapsize;
 
-uint32_t efi_boot_high_count = 0;
+uint64_t efi_boot_mtc = 0;
 
 /*
- * capture_monotonic_counter -- capture the UEFI high monotonic counter.
- *
- * Called exactly once during early loader boot, after heap and console
- * are initialised, before ExitBootServices(). Uses RuntimeServices so
- * it is available both in efi_main and later in the kernel.
- *
+ * Capture the UEFI monotonic counterCalled exactly once during early loader 
+ * boot, after heap and console are initialised, before ExitBootServices().
+ * Uses BootServices to capture the 64-bit monotonic counter.
  * On failure we log a warning and fall back to zero. We never halt --
  * a missing boot counter is non-fatal.
  */
@@ -51,11 +48,9 @@ capture_monotonic_counter(void)
 {
 	EFI_STATUS status;
 
-	status = RS->GetNextHighMonotonicCount(&efi_boot_high_count);
-
+	status = BS->GetNextMonotonicCount(&efi_boot_mtc);
 	if (EFI_ERROR(status)) {
-		ST->ConOut->OutputString(ST->ConOut, (CHAR16 *)L"bootcount: WARNING: GetNextHighMonotonicCount() failed, falling back to 0\r\n");
-		efi_boot_high_count = 0;
+		ST->ConOut->OutputString(ST->ConOut, (CHAR16 *)L"bootcount: WARNING: GetNextMonotonicCount() failed, falling back to 0\r\n");
 	}
 }
 

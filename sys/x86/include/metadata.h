@@ -35,6 +35,7 @@
 #define	MODINFOMD_MODULEP	0x1006
 #define	MODINFOMD_VBE_FB	0x1007
 #define	MODINFOMD_EFI_ARCH	0x1008
+#define MODINFOMD_EFI_MTC	0x1009
 
 /*
  * This is not the same as the UEFI standard EFI_MEMORY_ATTRIBUTES_TABLE, though

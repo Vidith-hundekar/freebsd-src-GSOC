@@ -426,6 +426,11 @@ preload_modinfo_type(struct sbuf *sbp, int type)
 		sbuf_cat(sbp, "MODINFOMD_EFI_MAP");
 		break;
 #endif
+#ifdef MODINFOMD_EFI_MTC
+	case MODINFOMD_EFI_MTC:
+		sbuf_cat(sbp, "MODINFOMD_EFI_MTC");
+		break;
+#endif
 #ifdef MODINFOMD_EFI_FB
 	case MODINFOMD_EFI_FB:
 		sbuf_cat(sbp, "MODINFOMD_EFI_FB");
@@ -490,6 +495,11 @@ preload_modinfo_value(struct sbuf *sbp, uint32_t *bptr, int type, int len)
 	case MODINFO_METADATA | MODINFOMD_CTORS_SIZE:
 		sbuf_printf(sbp, "%lu", *(u_long *)bptr);
 		break;
+#ifdef MODINFOMD_EFI_MTC
+	case MODINFO_METADATA | MODINFOMD_EFI_MTC:
+		sbuf_printf(sbp, "0x%jx", (uintmax_t)*(uint64_t *)bptr);
+		break;
+#endif
 	case MODINFO_ADDR:
 	case MODINFO_METADATA | MODINFOMD_SSYM:
 	case MODINFO_METADATA | MODINFOMD_ESYM:

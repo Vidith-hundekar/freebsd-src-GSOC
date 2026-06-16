@@ -64,6 +64,11 @@
 #include "geliboot.h"
 #endif
 
+#ifdef MODINFOMD_EFI_MTC
+extern uint64_t efi_boot_mtc;
+#endif
+
+
 static int
 bi_getboothowto(char *kargs)
 {
@@ -180,6 +185,10 @@ bi_load_efi_data(struct preloaded_file *kfp, bool exit_bs)
 	UINT32 mmver;
 	struct efi_map_header *efihdr;
 	bool do_vmap;
+
+#ifdef MODINFOMD_EFI_MTC
+	file_addmetadata(kfp, MODINFOMD_EFI_MTC, sizeof(efi_boot_mtc), &efi_boot_mtc);
+#endif
 
 #ifdef MODINFOMD_EFI_FB
 	struct efi_fb efifb;

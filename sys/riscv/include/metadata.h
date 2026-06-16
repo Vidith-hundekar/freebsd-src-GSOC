@@ -32,6 +32,7 @@
 #define	MODINFOMD_EFI_MAP	0x1002
 #define	MODINFOMD_EFI_FB	0x1003
 #define	MODINFOMD_BOOT_HARTID	0x1004
+#define MODINFOMD_EFI_MTC	0x1005
 
 /*
  * This is not the same as the UEFI standard EFI_MEMORY_ATTRIBUTES_TABLE, though

@@ -739,6 +739,21 @@ reset_system(enum efi_reset type)
 }
 
 static int
+get_next_high_monotone(uint32_t *high_cnt)
+{
+	struct efirt_callinfo ec;
+
+	if (efi_runtime == NULL)
+		return (ENXIO);
+	bzero(&ec, sizeof(ec));
+	ec.ec_name = "rt_gethicnt";
+	ec.ec_argcnt = 1;
+	ec.ec_arg1 = (uintptr_t)high_cnt;
+	ec.ec_fptr = EFI_RT_METHOD_PA(rt_gethicnt);
+	return (efi_call(&ec));
+}
+
+static int
 efi_set_time_locked(struct efi_tm *tm)
 {
 	struct efirt_callinfo ec;
@@ -839,6 +854,7 @@ const static struct efi_ops efi_ops = {
 	.get_time = get_time,
 	.get_time_capabilities = get_time_capabilities,
 	.reset_system = reset_system,
+	.get_next_high_monotone = get_next_high_monotone,
 	.set_time = set_time,
 	.get_waketime = get_waketime,
 	.set_waketime = set_waketime,

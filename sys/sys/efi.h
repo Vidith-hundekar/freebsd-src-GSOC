@@ -282,6 +282,7 @@ struct efi_ops {
 	int 	(*get_time)(struct efi_tm *);
 	int 	(*get_time_capabilities)(struct efi_tmcap *);
 	int	(*reset_system)(enum efi_reset);
+	int		(*get_next_high_monotone)(uint32_t *);
 	int 	(*set_time)(struct efi_tm *);
 	int 	(*get_waketime)(uint8_t *enabled, uint8_t *pending,
 	    struct efi_tm *tm);
@@ -340,6 +341,14 @@ efi_reset_system(enum efi_reset type)
 	if (active_efi_ops->reset_system == NULL)
 		return (ENXIO);
 	return (active_efi_ops->reset_system(type));
+}
+
+static inline int
+efi_get_next_high_monotone(uint32_t *high_cnt)
+{
+	if (active_efi_ops->get_next_high_monotone == NULL)
+		return (ENXIO);
+	return (active_efi_ops->get_next_high_monotone(high_cnt));
 }
 
 static inline int

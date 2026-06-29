@@ -187,7 +187,13 @@ bi_load_efi_data(struct preloaded_file *kfp, bool exit_bs)
 	bool do_vmap;
 
 #ifdef MODINFOMD_EFI_MTC
-	file_addmetadata(kfp, MODINFOMD_EFI_MTC, sizeof(efi_boot_mtc), &efi_boot_mtc);
+	/*
+	 * Pass the UEFI monotonic counter captured during Boot Services
+	 * to the kernel via preload metadata. The kernel reads this at
+	 * SI_SUB_KMEM via MD_FETCH(preload_kmdp, MODINFOMD_EFI_MTC).
+	 */
+	file_addmetadata(kfp, MODINFOMD_EFI_MTC,
+		 sizeof(efi_boot_mtc), &efi_boot_mtc);
 #endif
 
 #ifdef MODINFOMD_EFI_FB

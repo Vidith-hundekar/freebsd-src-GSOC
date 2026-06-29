@@ -32,7 +32,6 @@
 #define	MODINFOMD_EFI_FB	0x1003
 #define MODINFOMD_EFI_MTC	0x1004
 
-
 /*
  * This is not the same as the UEFI standard EFI_MEMORY_ATTRIBUTES_TABLE, though
  * memory_size / descritpr_size entries of EFI_MEMORY_DESCRIPTORS follow this table

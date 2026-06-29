@@ -33,16 +33,19 @@
 static EFI_PHYSICAL_ADDRESS heap;
 static UINTN heapsize;
 
+/*
+ * EFI monotonic counter captured during Boot Services.
+ */
 uint64_t efi_boot_mtc = 0;
 
 /*
- * Capture the UEFI monotonic counterCalled exactly once during early loader 
- * boot, after heap and console are initialised, before ExitBootServices().
- * Uses BootServices to capture the 64-bit monotonic counter.
- * On failure we log a warning and fall back to zero. We never halt --
- * a missing boot counter is non-fatal.
+ * capture_monotonic_counter -- captures the UEFI monotonic counter.
+ *
+ * Called exactly once during early loader boot, after heap and console
+ * are initialised, before ExitBootServices(). Uses BootServices to
+ * capture the full 64-bit monotonic counter. On failure we log a
+ * warning and fall back to zero. A missing boot counter is non-fatal.
  */
-
 static void
 capture_monotonic_counter(void)
 {
@@ -50,7 +53,8 @@ capture_monotonic_counter(void)
 
 	status = BS->GetNextMonotonicCount(&efi_boot_mtc);
 	if (EFI_ERROR(status)) {
-		ST->ConOut->OutputString(ST->ConOut, (CHAR16 *)L"bootcount: WARNING: GetNextMonotonicCount() failed, falling back to 0\r\n");
+		ST->ConOut->OutputString(ST->ConOut, 
+			(CHAR16 *)L"bootcount: WARNING: GetNextMonotonicCount() failed, falling back to 0\r\n");
 	}
 }
 
@@ -126,7 +130,7 @@ efi_main(EFI_HANDLE image_handle, EFI_SYSTEM_TABLE *system_table)
 
 	setheap((void *)(uintptr_t)heap, (void *)(uintptr_t)(heap + heapsize));
 
-	/* Start tslog now that we have a heap.*/
+	/* Start tslog now that we have a heap. */
 	tslog_init();
 
 	/* Capture EFI monotonic counter for persistent boot counter. */

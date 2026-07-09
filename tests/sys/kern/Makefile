@@ -8,6 +8,7 @@ TESTSRC=	${SRCTOP}/contrib/netbsd-tests/kernel
 TESTSDIR=	${TESTSBASE}/sys/kern
 
 ATF_TESTS_C+=	basic_signal
+ATF_TESTS_C+=	bootcount_test
 ATF_TESTS_C+=	copy_file_range
 .if ${MACHINE_ARCH} != "i386" && ${MACHINE_ARCH} != "powerpc"
 # No support for atomic_load_64 on i386 or (32-bit) powerpc

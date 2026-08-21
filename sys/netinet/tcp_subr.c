@@ -1522,8 +1522,6 @@ tcp_init(void *arg __unused)
 #endif /* INET6 */
 
 	ISN_LOCK_INIT();
-	EVENTHANDLER_REGISTER(shutdown_pre_sync, tcp_fini, NULL,
-		SHUTDOWN_PRI_DEFAULT);
 	EVENTHANDLER_REGISTER(vm_lowmem, tcp_drain, NULL, LOWMEM_PRI_DEFAULT);
 	EVENTHANDLER_REGISTER(mbuf_lowmem, tcp_drain, NULL, LOWMEM_PRI_DEFAULT);
 
@@ -1628,12 +1626,6 @@ tcp_destroy(void *unused __unused)
 }
 VNET_SYSUNINIT(tcp, SI_SUB_PROTO_DOMAIN, SI_ORDER_FOURTH, tcp_destroy, NULL);
 #endif
-
-void
-tcp_fini(void *xtp)
-{
-
-}
 
 /*
  * Fill in the IP and TCP headers for an outgoing packet, given the tcpcb.
@@ -2487,7 +2479,7 @@ tcp_discardcb(struct tcpcb *tp)
 	 * say srtt etc into the general one used by other stacks.
 	 */
 	if (tp->t_rttupdated >= 4) {
-		struct hc_metrics_lite metrics;
+		struct tcp_hc_metrics metrics;
 		uint32_t ssthresh;
 
 		bzero(&metrics, sizeof(metrics));

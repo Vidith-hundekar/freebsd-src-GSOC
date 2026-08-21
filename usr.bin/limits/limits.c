@@ -246,8 +246,8 @@ static struct {
     { "swapuse",	login_getcapsize },
     { "kqueues",	login_getcapnum  },
     { "umtxp",		login_getcapnum  },
-    { "pipebuf",	login_getcapnum  },
-    { "vmms",		login_getcapnum  },
+    { "pipebuf",	login_getcapsize },
+    { "vms",		login_getcapnum  },
 };
 
 _Static_assert(nitems(resources) == RLIM_NLIMITS,

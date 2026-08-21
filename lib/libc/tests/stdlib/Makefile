@@ -17,6 +17,7 @@ ATF_TESTS_C+=		qsort_s_test
 ATF_TESTS_C+=		qsort_bench
 ATF_TESTS_C+=		set_constraint_handler_s_test
 ATF_TESTS_C+=		strfmon_test
+ATF_TESTS_C+=		strfrom_test
 ATF_TESTS_C+=		system_test
 ATF_TESTS_C+=		tsearch_test
 ATF_TESTS_CXX+=		cxa_thread_atexit_test
@@ -30,6 +31,7 @@ CFLAGS+=	-D__HAVE_FENV
 .if ${MACHINE_CPUARCH} == "aarch64" || \
     ${MACHINE_CPUARCH} == "amd64" || \
     ${MACHINE_CPUARCH} == "i386" || \
+    ${MACHINE_ARCH} == "powerpc64le" || \
     ${MACHINE_CPUARCH} == "riscv"
 CFLAGS+=	-D__HAVE_LONG_DOUBLE
 .endif

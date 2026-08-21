@@ -36,8 +36,8 @@
 struct ifinfomsg {
 	unsigned char	ifi_family;	/* not used */
 	unsigned char	__ifi_pad;
-	unsigned short	ifi_type;	/* ARPHRD_* */
-	int		ifi_index;	/* Inteface index */
+	unsigned short	ifi_type;	/* IFT_* (net/if_types.h) */
+	int		ifi_index;	/* Interface index */
 	unsigned	ifi_flags;	/* IFF_* flags */
 	unsigned	ifi_change;	/* IFF_* change mask */
 };
@@ -271,6 +271,16 @@ struct ifla_vlan_flags {
 	uint32_t flags;
 	uint32_t mask;
 };
+
+/* IFLA_INFO_DATA gif attributes */
+enum {
+	IFLA_IPTUN_UNSPEC,
+	IFLA_IPTUN_LOCAL,
+	IFLA_IPTUN_REMOTE,
+	IFLA_IPTUN_FLAGS,
+	__IFLA_IPTUN_MAX,
+};
+#define IFLA_IPTUN_MAX	(__IFLA_IPTUN_MAX - 1)
 
 /* IFLA_INFO_DATA gre attributes */
 enum {

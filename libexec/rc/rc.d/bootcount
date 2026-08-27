@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# PROVIDE: bootcount
+# REQUIRE: mountcritlocal var
+# BEFORE:  DAEMON
+# KEYWORD: nojail
+
+. /etc/rc.subr
+
+name="bootcount"
+desc="Set kern.bootcount from persistent data"
+start_cmd="bootcount_start"
+stop_cmd=":"
+rcvar="bootcount_enable"
+
+bootcount_start()
+{
+    local f=/var/db/bootcount
+    local val
+
+    # skip if EFI already present
+    if [ "$(sysctl -n kern.bootcount_fw_backed 2>/dev/null)" = "1" ]; then
+        return 0
+    fi
+
+    if [ -f "$f" ]; then
+        val=$(cat "$f" 2>/dev/null)
+        case "$val" in
+        ''|*[!0-9]*)
+            logger -p daemon.warning "bootcount: corrupt state  file, resetting to 1"
+            val=1 
+            ;;
+        esac
+    else 
+        val=1
+    fi
+
+    val=$((val + 1))
+    chflags noschg "$f" 2>/dev/null
+    echo "$val" >  "$f".tmp && mv "$f".tmp "$f"
+    sysctl kern.bootcount="$val" >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        logger -p daemon.warning "bootcount: failed to set kern.bootcount"
+    fi
+    
+    chflags schg "$f" 2>/dev/null
+ }
+
+load_rc_config $name
+bootcount_svcj="NO"
+run_rc_command "$1"

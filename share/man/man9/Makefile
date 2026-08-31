@@ -205,6 +205,7 @@ MAN=	accept_filter.9 \
 	intro.9 \
 	kasan.9 \
 	KASSERT.9 \
+	kern_bootcount.9 \
 	kern_reboot.9 \
 	kern_testfrwk.9 \
 	kern_yield.9 \

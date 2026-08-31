@@ -37,7 +37,9 @@ bootcount_start()
 
     val=$((val + 1))
     chflags noschg "$f" 2>/dev/null
-    echo "$val" >  "$f".tmp && mv "$f".tmp "$f"
+    if ! (echo "$val" > "$f".tmp && mv "$f".tmp "$f"); then
+        logger -p daemon.warning "bootcount: failed to update $f (securelevel or filesystem restriction?)"
+    fi
     sysctl kern.bootcount="$val" >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         logger -p daemon.warning "bootcount: failed to set kern.bootcount"

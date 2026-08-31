@@ -95,6 +95,7 @@ MAN=	aac.4 \
 	bhndb_pci.4 \
 	blackhole.4 \
 	bnxt.4 \
+	bootcount.4 \
 	boottrace.4 \
 	bpf.4 \
 	bridge.4 \

@@ -1,0 +1,122 @@
+.\" Copyright (c) 2026 Vidith Hundekar
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.Dd August 28, 2026
+.Dt BOOTCOUNT 4
+.Os
+.Sh NAME
+.Nm bootcount
+.Nd persistent boot counter for early-boot anti-replay protection
+.Sh SYNOPSIS
+The kernel maintains a value, unique per boot, for use by early-boot
+networking protocols
+.Pq e.g. WireGuard, SCTP
+that must compute HMAC or similar authentication tags before the
+system entropy pool has been fully seeded.
+Mixing this value into such computations prevents replay of a
+captured authentication tag from one boot against a later boot.
+This page is about that facility.
+.Sh DESCRIPTION
+The value is exposed via two read-only
+.Xr sysctl 8
+nodes:
+.Bd -literal
+kern.bootcount: 472446402570
+kern.bootcount_fw_backed: 1
+.Ed
+.Pp
+The output nodes are defined as follows:
+.Bl -inset
+.It Va kern.bootcount
+is a
+.Vt uint64_t
+value, guaranteed to differ between any two boots of the system.
+This value is write-once per boot; once set, further writes are
+rejected with
+.Er EPERM
+until the next reboot.
+.It Va kern.bootcount_fw_backed
+is a boolean indicating whether
+.Va kern.bootcount
+was sourced from UEFI firmware
+.Pq Dq firmware-backed ,
+the stronger source, or from the non-UEFI fallback described below.
+.El
+.Pp
+On systems with UEFI firmware, the boot loader captures the UEFI
+monotonic counter via
+.Fn BS->GetNextMonotonicCount
+during Boot Services, and the kernel additionally consults
+.Fn RS->GetNextHighMonotonicCount
+as a fallback.
+This value originates in firmware NVRAM, outside the reach of the
+running operating system, and cannot be forged or rolled back by
+software running on the installed system.
+.Pp
+On systems without UEFI, a persistent counter is instead maintained
+at
+.Pa /var/db/bootcount
+by the
+.Xr rc 8
+script
+.Pa /etc/rc.d/bootcount ,
+protected with the
+.Dv SF_IMMUTABLE
+.Pq Dq schg
+flag via
+.Xr chflags 1 .
+This script is disabled by default and must be enabled explicitly
+via
+.Va bootcount_enable
+in
+.Xr rc.conf 5 :
+.Bd -literal -offset indent
+bootcount_enable="YES"
+.Ed
+.Sy This is not a security guarantee ;
+enforcement requires
+.Xr security 7
+level above 0, so
+.Va kern.bootcount
+should be treated as trustworthy only when
+.Va kern.bootcount_fw_backed
+is true.
+If a raised securelevel prevents the script from updating the file,
+the failure is logged via
+.Xr logger 1
+rather than passing silently.
+.Sh SEE ALSO
+.Xr chflags 1 ,
+.Xr logger 1 ,
+.Xr security 7 ,
+.Xr rc 8 ,
+.Xr sysctl 8 ,
+.Xr kern_bootcount 9
+.Sh HISTORY
+The
+.Nm
+facility was implemented as part of a Google Summer of Code 2026
+project.
+.Sh AUTHORS
+.An Vidith Hundekar Aq Mt hundekarvidith@gmail.com

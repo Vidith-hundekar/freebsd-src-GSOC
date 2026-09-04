@@ -1,5 +1,9 @@
 #!/bin/sh
 #
+# SPDX-License-Identifier: BSD-2-Clause
+#
+# Copyright (c) 2026 Vidith Hundekar.
+#
 # PROVIDE: bootcount
 # REQUIRE: mountcritlocal var
 # BEFORE:  DAEMON

@@ -1,26 +1,7 @@
-.\" Copyright (c) 2026 Vidith Hundekar
-.\" All rights reserved.
+.\" Copyright (c) 2026 Bruce Simpson.
+.\" Copyright (c) 2026 Vidith Hundekar.
 .\"
-.\" Redistribution and use in source and binary forms, with or without
-.\" modification, are permitted provided that the following conditions
-.\" are met:
-.\" 1. Redistributions of source code must retain the above copyright
-.\"    notice, this list of conditions and the following disclaimer.
-.\" 2. Redistributions in binary form must reproduce the above copyright
-.\"    notice, this list of conditions and the following disclaimer in the
-.\"    documentation and/or other materials provided with the distribution.
-.\"
-.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-.\" SUCH DAMAGE.
+.\" SPDX-License-Identifier: BSD-2-Clause
 .\"
 .Dd August 28, 2026
 .Dt BOOTCOUNT 4
@@ -29,15 +10,19 @@
 .Nm bootcount
 .Nd persistent boot counter for early-boot anti-replay protection
 .Sh SYNOPSIS
-The kernel maintains a value, unique per boot, for use by early-boot
+No kernel configuration options are required; this facility is
+compiled in unconditionally.
+.Sh DESCRIPTION
+The
+.Nm
+facility provides a value, unique per boot, for use by early-boot
 networking protocols
 .Pq e.g. WireGuard, SCTP
 that must compute HMAC or similar authentication tags before the
 system entropy pool has been fully seeded.
 Mixing this value into such computations prevents replay of a
 captured authentication tag from one boot against a later boot.
-This page is about that facility.
-.Sh DESCRIPTION
+.Pp
 The value is exposed via two read-only
 .Xr sysctl 8
 nodes:
@@ -88,24 +73,12 @@ flag via
 .Xr chflags 1 .
 This script is disabled by default and must be enabled explicitly
 via
-.Va bootcount_enable
+.Ic bootcount_enable
 in
 .Xr rc.conf 5 :
 .Bd -literal -offset indent
 bootcount_enable="YES"
 .Ed
-.Sy This is not a security guarantee ;
-enforcement requires
-.Xr security 7
-level above 0, so
-.Va kern.bootcount
-should be treated as trustworthy only when
-.Va kern.bootcount_fw_backed
-is true.
-If a raised securelevel prevents the script from updating the file,
-the failure is logged via
-.Xr logger 1
-rather than passing silently.
 .Sh SEE ALSO
 .Xr chflags 1 ,
 .Xr logger 1 ,
@@ -120,3 +93,16 @@ facility was implemented as part of a Google Summer of Code 2026
 project.
 .Sh AUTHORS
 .An Vidith Hundekar Aq Mt hundekarvidith@gmail.com
+.Sh SECURITY CONSIDERATIONS
+.Sy This is not a security guarantee ;
+enforcement requires
+.Xr security 7
+level above 0, so
+.Va kern.bootcount
+should be treated as trustworthy only when
+.Va kern.bootcount_fw_backed
+is true.
+If a raised securelevel prevents the script from updating the file,
+the failure is logged via
+.Xr logger 1
+rather than passing silently.

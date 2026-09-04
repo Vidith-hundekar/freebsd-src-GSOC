@@ -3182,6 +3182,20 @@ is set to
 these are the flags to pass to the
 .Xr rarpd 8
 daemon.
+.It Va bootcount_enable
+.Pq Vt bool
+Set to
+.Dq YES
+to enable the non-UEFI fallback boot counter script,
+.Pa /etc/rc.d/bootcount ,
+which maintains a persistent counter at
+.Pa /var/db/bootcount
+on systems without UEFI firmware.
+See
+.Xr bootcount 4
+for details.
+Default is
+.Dq NO .
 .It Va bootparamd_enable
 .Pq Vt bool
 If set to
